@@ -1,6 +1,7 @@
- const POND_SIZE=300;//√池のセル数
+ const POND_SIZE=200;//√池のセル数
     class Fish{
-      constructor(pondSize){
+      constructor(pondSize,firestPos){
+        this.firestPos=firestPos;
         this.caneat="any";
         this.taiseki=10;
         this.strongCoeff=10;
@@ -19,6 +20,9 @@
         this.jumyou=60*60*60*1;
         this.hansyokuTime=60*60*10;
         this.lifeCicle=3600;
+      }
+      getTailPosition(){
+        return this.positionStack[0]||[50,50];
       }
       getNowPosition(){
         return this.positionStack[this.positionStack.length-1];
@@ -91,7 +95,7 @@
        } 
       }
       setPosition(){
-        const firstPos=[50,50];//[Math.floor(Math.random()*this.pondSize),Math.floor(Math.random()*this.pondSize)];
+        const firstPos=this.firestPos==null?[50,50]:this.firestPos;//[Math.floor(Math.random()*this.pondSize),Math.floor(Math.random()*this.pondSize)];
         this.positionStack.push(firstPos);
         for(let i=0;i<this.tailSize;i++){
           let nextPos=null;
@@ -127,49 +131,53 @@
       }
     }
     class Funa extends Fish{
-      constructor(pondSize){
-        super(pondSize);
+      constructor(pondSize,firestPos){
+        super(pondSize,firestPos=null);
+        this.firestPos=firestPos;
         this.width=8;
-        this.taiseki=5;
+        this.taiseki=3;
         this.color="#f00";
         this.strongCoeff=10;
         this.tailSize=7;
         this.name="funa";
         this.staightRunCoeff=80+Math.floor(Math.random()*15);
         this.jumyou=60*60*(Math.random()*3);
-        this.hansyokuTime=60*60*1;
+        this.hansyokuTime=Math.floor(60*45+Math.random()*20);
         this.setPosition();
-        this.taisha=3;
+        this.taisha=1;
         this.caneat="mizinko";
         this.lifeCicle=60*20;
       }
       copy(){
-        return new Funa(this.pondSize);
+        return new Funa(this.pondSize,this.getTailPosition());
       }
     }
     class Koi extends Fish{
-      constructor(pondSize){
-        super(pondSize);
-        this.taiseki=20;
-        this.tailSize=15;
+      constructor(pondSize,firestPos){
+        super(pondSize,firestPos=null);
+        this.firestPos=firestPos;
+        this.taiseki=8;
+        this.tailSize=25;
         this.width=12;
         this.color="#0f0";
         this.strongCoeff=20;
         this.name="koi";
-        this.taisha=8;
+        this.taisha=3;
         this.staightRunCoeff=94+Math.floor(Math.random()*5);
         this.jumyou=60*60*(Math.random()*10);
-        this.hansyokuTime=60*60*3;
+        this.hansyokuTime=Math.floor(60*60+Math.random()*20);
         this.caneat="funa";
+        this.lifeCicle=60*35;
         this.setPosition();
       }
       copy(){
-        return new Koi(this.pondSize);
+        return new Koi(this.pondSize,this.getTailPosition());
       }
     }
     class Mizinko extends Fish{
-      constructor(pondSize){
-        super(pondSize);
+      constructor(pondSize,firestPos=null){
+        super(pondSize,firestPos=null);
+        this.firestPos=firestPos;
         this.taiseki=1;
         this.width=3;
         this.color="#0ff";
@@ -199,26 +207,31 @@
         this.fishList=fishList;
       }
       getFishPos(){
+        this.fishList=this.fishList.filter(o=>o);
         //死んだ魚排除
         for(let i=this.fishList.length-1;i>=0;i--){
           if(this.fishList[i].is_dead){
             for(let j=0;j<this.fishList[i].hara+this.fishList[i].fun;j++){
-              this.fishList.push(new Mizinko(POND_SIZE));
+              try{
+                this.fishList.push(new Mizinko(POND_SIZE,fishList[i].getTailPosition()));
+              }catch(e){
+                console.log(e);
+                console.log(fishList[i]);
+              }
             }
             this.fishList.splice(i,1);
+          }else{
+            //ふんをする
+            for(let j=0;j<this.fishList[i].fun;j++){
+              this.fishList.push(new Mizinko(POND_SIZE,fishList[i].getTailPosition()));
+            }
+            this.fishList[i].fun=0;
           }
         }
-        //ふんをする
-        for(let i=this.fishList.length-1;i>=0;i--){
-          for(let j=0;j<this.fishList[i].fun;j++){
-            this.fishList.push(new Mizinko(POND_SIZE));
-          }
-          this.fishList[i].fun=0;
-        }
+        
         this.fishList=this.fishList.filter(fish=>!fish.is_dead);
         //繁殖
         for(let i=this.fishList.length-1;i>=0;i--){
-          console.log(this.fishList[i]);
           const hansyoku=this.fishList[i].hansyoku();
           if(hansyoku){
             for(let j=0;j<hansyoku.length;j++){
@@ -237,8 +250,8 @@
             if(i_position[0]==j_position[0]&&i_position[1]==j_position[1]){
               if(this.fishList[i].strongCoeff>this.fishList[j].strongCoeff){
                 if(this.fishList[i].caneat==this.fishList[j].name&&this.fishList[i].hara<this.fishList[i].haraSize){
-                  this.fishList.splice(j,1); 
                   this.fishList[i].taberu(this.fishList[j].taiseki);
+                  this.fishList.splice(j,1); 
                 }
                 
               }
@@ -262,9 +275,9 @@
     for(let i=0;i<80;i++){
       fishList.push(new Funa(POND_SIZE));
     }
-    // for(let i=0;i<200;i++){
-    //   fishList.push(new Mizinko(POND_SIZE));
-    // }
+    for(let i=0;i<500;i++){
+      fishList.push(new Mizinko(POND_SIZE));
+    }
 
     const pond = new Pond(fishList);
 
