@@ -1,26 +1,33 @@
  const POND_SIZE=300;//√池のセル数
     class Fish{
       constructor(pondSize){
+        this.caneat="any";
         this.taiseki=10;
         this.strongCoeff=10;
         this.width=10;
         this.color="#fff";
+        this.fun=0;
         this.pondSize=pondSize;
         this.positionStack=[];
         this.tailSize=10;
         this.staightRunCoeff=95;
-        this.hara=10;
+        this.hara=this.taiseki;
+        this.haraSize=this.taiseki*6;
         this.count=0;
         this.taisha=1;
         this.is_dead=false;
         this.jumyou=60*60*60*1;
         this.hansyokuTime=60*60*10;
+        this.lifeCicle=3600;
       }
       getNowPosition(){
         return this.positionStack[this.positionStack.length-1];
       }
       taberu(n){
         this.hara+=n;
+      }
+      getWidth(){
+        return this.hara;
       }
       susumu(n){
         n=n%4;
@@ -53,17 +60,20 @@
         return new Fish(this.pondSize);
       }
       hansyoku(){
-        if(this.count%this.hansyokuTime==1){
-          if(this.hara>10){
-            return this.copy();
+        if(this.count%this.hansyokuTime==this.hansyokuTime-1){
+          if(this.hara>this.taiseki){
+            const childSize=Math.floor((this.hara-this.taiseki)/this.taiseki);
+            this.hara-=childSize*this.taiseki;
+            return [...Array(childSize)].map(o=>this.copy())
           }
         }
         return false;
       }
       life(){
         this.count++;
-        if(this.count%3600==0){
+        if(this.count%this.lifeCicle==0){
           this.hara-=this.taisha;
+          this.fun+=this.taisha;
           if(this.hara<0){
             this.is_dead=true;
           }
@@ -129,6 +139,9 @@
         this.jumyou=60*60*(Math.random()*3);
         this.hansyokuTime=60*60*1;
         this.setPosition();
+        this.taisha=3;
+        this.caneat="mizinko";
+        this.lifeCicle=60*20;
       }
       copy(){
         return new Funa(this.pondSize);
@@ -143,9 +156,11 @@
         this.color="#0f0";
         this.strongCoeff=20;
         this.name="koi";
+        this.taisha=8;
         this.staightRunCoeff=94+Math.floor(Math.random()*5);
-        this.jumyou=60*60*(Math.random()*5);
+        this.jumyou=60*60*(Math.random()*10);
         this.hansyokuTime=60*60*3;
+        this.caneat="funa";
         this.setPosition();
       }
       copy(){
@@ -160,6 +175,7 @@
         this.color="#0ff";
         this.strongCoeff=1;
         this.tailSize=2;
+        this.hara=1;
         this.name="mizinko";
         this.staightRunCoeff=20+Math.floor(Math.random()*5);
         this.setPosition();
@@ -172,6 +188,11 @@
         return this.susumu(prev+(Math.floor(Math.random()*2.2)==0?3:1));
        } 
       }
+      life(){
+      }
+      hansyoku(){
+        return false;
+      }
     }
     class Pond{
       constructor(fishList){
@@ -181,11 +202,18 @@
         //死んだ魚排除
         for(let i=this.fishList.length-1;i>=0;i--){
           if(this.fishList[i].is_dead){
-            for(let j=0;j<this.fishList[i].taiseki;j++){
+            for(let j=0;j<this.fishList[i].hara+this.fishList[i].fun;j++){
               this.fishList.push(new Mizinko(POND_SIZE));
             }
             this.fishList.splice(i,1);
           }
+        }
+        //ふんをする
+        for(let i=this.fishList.length-1;i>=0;i--){
+          for(let j=0;j<this.fishList[i].fun;j++){
+            this.fishList.push(new Mizinko(POND_SIZE));
+          }
+          this.fishList[i].fun=0;
         }
         this.fishList=this.fishList.filter(fish=>!fish.is_dead);
         //繁殖
@@ -193,7 +221,9 @@
           console.log(this.fishList[i]);
           const hansyoku=this.fishList[i].hansyoku();
           if(hansyoku){
-            this.fishList.push(hansyoku);
+            for(let j=0;j<hansyoku.length;j++){
+              this.fishList.push(hansyoku[j]);
+            }
           }
         }
         //捕食
@@ -206,14 +236,11 @@
             const j_position=this.fishList[j].getNowPosition();
             if(i_position[0]==j_position[0]&&i_position[1]==j_position[1]){
               if(this.fishList[i].strongCoeff>this.fishList[j].strongCoeff){
-                this.fishList.splice(j,1); 
-                // this.fishList[j].is_dead=true;
-                this.fishList[i].taberu(this.fishList[j].taiseki);
-              }
-              if(this.fishList[i].strongCoeff<this.fishList[j].strongCoeff){
-                this.fishList.splice(i,1);
-                // this.fishList[i].is_dead=true;
-                this.fishList[j].taberu(this.fishList[j].taiseki);
+                if(this.fishList[i].caneat==this.fishList[j].name&&this.fishList[i].hara<this.fishList[i].haraSize){
+                  this.fishList.splice(j,1); 
+                  this.fishList[i].taberu(this.fishList[j].taiseki);
+                }
+                
               }
             }
           }
@@ -222,7 +249,7 @@
           return {
             "position":o.getPosition(),
             "color":o.color,
-            "width":o.width
+            "width":o.getWidth()
           }
         })
       }
@@ -235,9 +262,9 @@
     for(let i=0;i<80;i++){
       fishList.push(new Funa(POND_SIZE));
     }
-    for(let i=0;i<200;i++){
-      fishList.push(new Mizinko(POND_SIZE));
-    }
+    // for(let i=0;i<200;i++){
+    //   fishList.push(new Mizinko(POND_SIZE));
+    // }
 
     const pond = new Pond(fishList);
 
