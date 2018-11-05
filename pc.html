@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+  <title>test</title>
+  <style>
+    body {
+      margin: 0;
+      height: 0;
+      overflow: hidden;
+    }
+    .canvasWrap{
+      text-align:center;
+    }
+    .pond {
+      width: 90%;
+      height: 600px;
+      background: black;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="canvasWrap">
+    <canvas class="pond" id="js-pond" onclick="canvasClick(event)" onmousedown="canvasMousedown(event)" onmouseup="canvasMouseup(event)" onmouseleave="canvasMouseleave(event)" onmousemove="canvasMousemove(event)"></canvas>
+  </div>
+  <canvas id="delaytimeChart" width="400" height="400"></canvas>
+  <script src="main_slide.js"> </script>
+</body>
+</html>
