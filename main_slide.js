@@ -337,12 +337,29 @@
       }
     }
     const canvasController=new CanvasController();
-
+    const ChartData={
+      carp:[],
+      funa:[],
+      setFish:(fishList)=>{
+        ChartData.carp.push(0);
+        ChartData.funa.push(0);
+        fishList.forEach(fish=>{
+          switch(fish.name){
+            case 'koi':
+            ChartData.carp[ChartData.carp.length-1]++;
+            break;
+            case 'funa':
+            ChartData.funa[ChartData.funa.length-1]++;
+            break;
+          }
+        });
+      }
+    }
     // canvas要素の参照を取得
     const canvas = document.getElementById('js-pond');
     // 2Dの描画命令群を取得
     const context = canvas.getContext('2d');
-
+    let drawCount=0;
     resize();
     tick();
     window.addEventListener('resize', resize);
@@ -352,9 +369,33 @@
       requestAnimationFrame(tick);
       draw();
     }
+    
 
         /** 描画します。 */
     function draw() {
+      drawCount++;
+      if(drawCount%300==1){
+        ChartData.setFish(pond.fishList);
+        console.log(ChartData.carp);
+        //チャート
+        const ctx = document.getElementById("fishChart");
+        const fishChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            datasets:[
+              {
+                label:"Carp",
+                data:ChartData.carp
+              },
+              {
+                label:"Funa",
+                data:ChartData.funa
+              }
+            ],
+            labels:[...Array(ChartData.carp.length).keys()]
+          }
+      });
+      }
       // 画面をリセット
       context.clearRect(0, 0, stageW, stageH);
       context.lineWidth = 10;
@@ -408,3 +449,6 @@
 
       canvasController.mousemove(e);
     }
+
+
+    

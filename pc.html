@@ -14,6 +14,11 @@
     .canvasWrap{
       text-align:center;
     }
+    .chartWrap{
+      text-align:center;
+      width:500px;
+      height:500px;
+    }
     .pond {
       width: 90%;
       height: 600px;
@@ -26,7 +31,10 @@
   <div class="canvasWrap">
     <canvas class="pond" id="js-pond" onclick="canvasClick(event)" onmousedown="canvasMousedown(event)" onmouseup="canvasMouseup(event)" onmouseleave="canvasMouseleave(event)" onmousemove="canvasMousemove(event)"></canvas>
   </div>
-  <canvas id="delaytimeChart" width="400" height="400"></canvas>
+  <div class="chartWrap">
+    <canvas id="fishChart" width="400" height="400"></canvas>
+  </div>
+  <p></p>
   <script src="main_slide.js"> </script>
 </body>
 </html>
