@@ -1,10 +1,11 @@
 import {Fish} from 'Fish';
 export class Funa extends Fish {
-    name = "funa";
+    
     constructor(pondSize: number, firestPos?: [number, number]) {
         super(pondSize, firestPos);
     }
     init() {
+        this.name = "funa";
         this.width = 8;
         this.taiseki = 3;
         this.color = "#eff";

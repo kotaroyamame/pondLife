@@ -1,6 +1,6 @@
 import { Pond } from "./Pond";
 
-export class Fish {
+export abstract class Fish {
     name: string = "";
     mouseSize = 2;
     caneat = "any";
@@ -21,8 +21,9 @@ export class Fish {
     hansyokuTime = 60 * 60 * 10;
     lifeCicle = 3600;
     constructor(protected pondSize: number, protected firestPos?: [number, number]) {
-
+        this.init();
     }
+    abstract init():void;
     getTailPosition() {
         return this.positionStack[0] || [50, 50];
     }
@@ -63,9 +64,7 @@ export class Fish {
         }
         return 0;
     }
-    copy() {
-        return new Fish(this.pondSize);
-    }
+    abstract copy():Fish;
     hansyoku(): Array<any> {
         if (this.count % this.hansyokuTime == this.hansyokuTime - 1) {
             if (this.hara > this.taiseki * 2) {

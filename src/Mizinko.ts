@@ -1,16 +1,18 @@
 import {Fish} from 'Fish';
 export class Mizinko extends Fish {
-  taiseki = 1;
-  width = 3;
-  color = "#0ff";
-  strongCoeff = 1;
-  tailSize = 2;
-  hara = 1;
-  name = "mizinko";
-  staightRunCoeff = 20 + Math.floor(Math.random() * 5);
+
   constructor(pondSize: number, firestPos?: [number, number]) {
     super(pondSize, firestPos);
-
+  }
+  init(){
+    this.taiseki = 1;
+    this.width = 3;
+    this.color = "#0ff";
+    this.strongCoeff = 1;
+    this.tailSize = 2;
+    this.hara = 1;
+    this.name = "mizinko";
+    this.staightRunCoeff = 20 + Math.floor(Math.random() * 5);
     this.setPosition();
   }
   getNextPosition(prev: number) {
@@ -22,6 +24,9 @@ export class Mizinko extends Fish {
     }
   }
   life() {
+  }
+  copy(){
+    return new Mizinko(this.pondSize);
   }
   hansyoku() {
     return [];

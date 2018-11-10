@@ -61,6 +61,9 @@ export class Pond {
     for (let i = this.fishList.length - 1; i >= 0; i--) {
       const i_position = this.fishList[i].getNowPosition();
       //インデックスを落とす
+      if(!i_position){
+        continue;
+      }
       if (this.mouseShadow[i_position[0]] && this.mouseShadow[i_position[0]][i_position[1]]) {
         this.mouseShadow[i_position[0]][i_position[1]].push(i);
       }
