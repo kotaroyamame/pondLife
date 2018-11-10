@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
   <title>test</title>
   <style>
     body {
@@ -10,17 +11,31 @@
       height: 0;
       overflow: hidden;
     }
-
-    canvas {
-      width: 100vw;
-      height: 100vh;
+    .canvasWrap{
+      text-align:center;
+    }
+    .chartWrap{
+      text-align:center;
+      width:500px;
+      height:500px;
+    }
+    .pond {
+      width: 90%;
+      height: 600px;
       background: black;
     }
   </style>
+  <script src="main.js"> </script>
 </head>
 <body>
-  <canvas></canvas>
 
-  <script src="main.js"> </script>
+  <div class="canvasWrap">
+    <canvas class="pond" id="js-pond" onclick="window.canvasClick(event)" onmousedown="canvasMousedown(event)" onmouseup="canvasMouseup(event)" onmouseleave="canvasMouseleave(event)" onmousemove="canvasMousemove(event)"></canvas>
+  </div>
+  <div class="chartWrap">
+    <canvas id="fishChart" width="400" height="400"></canvas>
+  </div>
+  <p></p>
+  
 </body>
 </html>
