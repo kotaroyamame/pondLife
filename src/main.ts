@@ -1,32 +1,32 @@
- const POND_SIZE=100;//√池のセル数
- const KOI_SIZE=2;//鯉の数
- const FUNA_SIZE=50;//フナの数
- const MIZINKO_SIZE=20;//ミジンコの数
+ const POND_SIZE:number=100;//√池のセル数
+ const KOI_SIZE:number=2;//鯉の数
+ const FUNA_SIZE:number=50;//フナの数
+ const MIZINKO_SIZE:number=20;//ミジンコの数
  class Eye{
 
  }
     class Fish{
-      constructor(pondSize,firestPos){
-        this.mouseSize=2;
-        this.firestPos=firestPos;
-        this.caneat="any";
-        this.taiseki=10;
-        this.strongCoeff=10;
-        this.width=10;
-        this.color="#fff";
-        this.fun=0;
-        this.pondSize=pondSize;
-        this.positionStack=[];
-        this.tailSize=10;
-        this.staightRunCoeff=95;
-        this.hara=this.taiseki;
-        this.haraSize=this.taiseki*7;
-        this.count=0;
-        this.taisha=1;
-        this.is_dead=false;
-        this.jumyou=60*60*60*1;
-        this.hansyokuTime=60*60*10;
-        this.lifeCicle=3600;
+      name:string="";
+      mouseSize=2;
+      caneat="any";
+      taiseki=10;
+      strongCoeff=10;
+      width=10;
+      color="#fff";
+      fun=0;
+      positionStack:Array<[number,number]>=[];
+      tailSize=10;
+      staightRunCoeff=95;
+      hara=this.taiseki;
+      haraSize=this.taiseki*7;
+      count=0;
+      taisha=1;
+      is_dead=false;
+      jumyou=60*60*60*1;
+      hansyokuTime=60*60*10;
+      lifeCicle=3600;
+      constructor(protected pondSize:number,protected firestPos?:[number,number]){
+
       }
       getTailPosition(){
         return this.positionStack[0]||[50,50];
@@ -34,13 +34,13 @@
       getNowPosition(){
         return this.positionStack[this.positionStack.length-1];
       }
-      taberu(n){
+      taberu(n:number){
         this.hara+=n;
       }
       getWidth(){
         return this.hara;
       }
-      susumu(n){
+      susumu(n:number):[number,number]{
         n=n%4;
         switch(n){
           case 0://上
@@ -52,10 +52,11 @@
           case 3://左
             return [-1,0]
         }
+        return [0,-1];
       }
-      getNByVec(vec){
-        vec=String(vec);
-        switch(vec){
+      getNByVec(vec:Array<number>):number{
+        const stvec=String(vec);
+        switch(stvec){
           case "0,-1"://上
             return 0
           case "1,0"://右
@@ -70,7 +71,7 @@
       copy(){
         return new Fish(this.pondSize);
       }
-      hansyoku(){
+      hansyoku():Array<any>{
         if(this.count%this.hansyokuTime==this.hansyokuTime-1){
           if(this.hara>this.taiseki*2){
             const childSize=Math.floor((this.hara-this.taiseki)/this.taiseki);
@@ -78,7 +79,7 @@
             return [...Array(childSize)].map(o=>this.copy())
           }
         }
-        return false;
+        return [];
       }
       life(){
         this.count++;
@@ -93,7 +94,7 @@
           this.is_dead=true;
         }
       }
-      getNextPosition(prev){
+      getNextPosition(prev:number):[number,number]{
        const a = Math.floor(Math.random()*100)-this.staightRunCoeff;
        if(a<=0){
         return this.susumu(prev+2);
@@ -102,21 +103,21 @@
        } 
       }
       setPosition(){
-        const firstPos=this.firestPos==null?[50,50]:this.firestPos;//[Math.floor(Math.random()*this.pondSize),Math.floor(Math.random()*this.pondSize)];
+        const firstPos:[number,number]=this.firestPos==null?[50,50]:this.firestPos;//[Math.floor(Math.random()*this.pondSize),Math.floor(Math.random()*this.pondSize)];
         this.positionStack.push(firstPos);
         for(let i=0;i<this.tailSize;i++){
-          let nextPos=null;
+          let nextPos:[number,number]|false;
           if(this.positionStack.length<3){
             nextPos=this.susumu(Math.floor(Math.random()*4));
           }else{
             nextPos=this.getNextPosition(this.getNByVec([this.positionStack[this.positionStack.length-2][0]-this.positionStack[this.positionStack.length-1][0],this.positionStack[this.positionStack.length-2][1]-this.positionStack[this.positionStack.length-1][1]]));
           }
-          this.positionStack.push([this.positionStack[this.positionStack.length-1][0]+nextPos[0],this.positionStack[this.positionStack.length-1][1]+nextPos[1]]);
+          if(nextPos){
+            this.positionStack.push([this.positionStack[this.positionStack.length-1][0]+nextPos[0],this.positionStack[this.positionStack.length-1][1]+nextPos[1]]);
+          } 
         }
-        
-
       }
-      pondSide(n){
+      pondSide(n:number){
         if(n<0){
           return -n;
         }
@@ -138,15 +139,16 @@
       }
     }
     class Funa extends Fish{
-      constructor(pondSize,firestPos){
-        super(pondSize,firestPos=null);
-        this.firestPos=firestPos;
+      name="funa";
+      constructor(pondSize:number,firestPos?:[number,number]){
+        super(pondSize,firestPos);
+      }
+      init(){
         this.width=8;
         this.taiseki=3;
         this.color="#eff";
         this.strongCoeff=10;
         this.tailSize=7;
-        this.name="funa";
         this.staightRunCoeff=80+Math.floor(Math.random()*15);
         this.jumyou=60*60+Math.floor((Math.random()*30));
         this.hansyokuTime=60*15+Math.floor((Math.random()*30));
@@ -161,22 +163,25 @@
       }
     }
     class Koi extends Fish{
-      constructor(pondSize,firestPos){
-        super(pondSize,firestPos=null);
-        this.firestPos=firestPos;
-        this.taiseki=25;
-        this.tailSize=25;
-        this.width=12;
-        this.color="#0f0";
-        this.strongCoeff=20;
-        this.name="koi";
-        this.taisha=3;
-        this.staightRunCoeff=94+Math.floor(Math.random()*5);
-        this.jumyou=60*60*2+Math.floor((Math.random()*30));
-        this.hansyokuTime=60*20+Math.floor((Math.random()*30));
-        this.caneat="funa";
-        this.lifeCicle=60*10;
-        this.haraSize=this.taiseki*7;
+      name="koi";
+      taiseki=25;
+      tailSize=25;
+      width=12;
+      color="#0f0";
+      strongCoeff=20;
+      taisha=3;
+      staightRunCoeff=94+Math.floor(Math.random()*5);
+      jumyou=60*60*2+Math.floor((Math.random()*30));
+      hansyokuTime=60*20+Math.floor((Math.random()*30));
+      caneat="funa";
+      lifeCicle=60*10;
+      haraSize=this.taiseki*7;
+      constructor(pondSize:number,firestPos?:[number,number]){
+        super(pondSize,firestPos);
+        
+      }
+      init(){
+
         this.setPosition();
       }
       copy(){
@@ -184,20 +189,20 @@
       }
     }
     class Mizinko extends Fish{
-      constructor(pondSize,firestPos=null){
-        super(pondSize,firestPos=null);
-        this.firestPos=firestPos;
-        this.taiseki=1;
-        this.width=3;
-        this.color="#0ff";
-        this.strongCoeff=1;
-        this.tailSize=2;
-        this.hara=1;
-        this.name="mizinko";
-        this.staightRunCoeff=20+Math.floor(Math.random()*5);
+      taiseki=1;
+      width=3;
+      color="#0ff";
+      strongCoeff=1;
+      tailSize=2;
+      hara=1;
+      name="mizinko";
+      staightRunCoeff=20+Math.floor(Math.random()*5);
+      constructor(pondSize:number,firestPos?:[number,number]){
+        super(pondSize,firestPos);
+
         this.setPosition();
       }
-      getNextPosition(prev){
+      getNextPosition(prev:number){
        const a = Math.floor(Math.random()*100)-this.staightRunCoeff;
        if(a<=0){
         return this.susumu(prev+2);
@@ -208,13 +213,12 @@
       life(){
       }
       hansyoku(){
-        return false;
+        return [];
       }
     }
     class Pond{
-      constructor(pondSize,fishList){
-        this.fishList=fishList;
-        this.pondSize=pondSize;
+      mouseShadow:Array<Array<any>>;
+      constructor(private pondSize:number,private fishList:Array<Fish>){
         this.mouseShadow=[...Array(pondSize)].map(o=>[...Array(pondSize)].map(p=>[]));
       }
       resetShadow(){
@@ -233,10 +237,10 @@
           if(this.fishList[i].is_dead){
             for(let j=0;j<this.fishList[i].hara+this.fishList[i].fun;j++){
               try{
-                this.fishList.push(new Mizinko(POND_SIZE,fishList[i].getTailPosition()));
+                this.fishList.push(new Mizinko(POND_SIZE,this.fishList[i].getTailPosition()));
               }catch(e){
                 console.log(e);
-                console.log(fishList[i]);
+                console.log(this.fishList[i]);
               }
             }
             this.fishList.splice(i,1);
@@ -246,10 +250,10 @@
             //ふんをする
             for(let j=0;j<this.fishList[i].fun;j++){
               try{
-                this.fishList.push(new Mizinko(POND_SIZE,fishList[i].getTailPosition()));
+                this.fishList.push(new Mizinko(POND_SIZE,this.fishList[i].getTailPosition()));
               }catch(e){
                 console.log(e);
-                console.log(fishList[i]);
+                console.log(this.fishList[i]);
               }
             }
             this.fishList[i].fun=0;
@@ -262,10 +266,8 @@
         //繁殖
         for(let i=this.fishList.length-1;i>=0;i--){
           const hansyoku=this.fishList[i].hansyoku();
-          if(hansyoku){
-            for(let j=0;j<hansyoku.length;j++){
-              this.fishList.push(hansyoku[j]);
-            }
+          for(let j=0;j<hansyoku.length;j++){
+            this.fishList.push(hansyoku[j]);
           }
         }
         //捕食
@@ -332,33 +334,32 @@
     let stageW = 0; // 画面の幅
     let stageH = 0; // 画面の高さ
     class CanvasController{
-      constructor(){
-        this.is_down=false;
-        this.startX=0;
-        this.startY=0;
-        this.endX=0;
-        this.endY=0;
-        this.x=0;
-        this.y=0;
-        this.zoomMax=2;
-        this.zoomMin=0.1;
-        this.zoom=1;
-      }
-      mousedown(e){
+      is_down=false;
+      startX=0;
+      startY=0;
+      endX=0;
+      endY=0;
+      x=0;
+      y=0;
+      zoomMax=2;
+      zoomMin=0.1;
+      zoom:number=1;
+      endZoom:number=1;
+      mousedown(e:MouseEvent){
         console.log(e);
         
         this.startX=e.offsetX;
         this.startY=e.offsetY;
         this.is_down=true;
       }
-      mouseup(e){
+      mouseup(e:MouseEvent){
         console.log(e);
         this.is_down=false;
         this.endX=this.x;
         this.endY=this.y;
         this.endZoom=this.zoom;
       }
-      mousemove(e){
+      mousemove(e:MouseEvent){
 
         if(this.is_down){
           if(e.altKey){
@@ -377,113 +378,129 @@
         }
       }
     }
-    const canvasController=new CanvasController();
-    const ChartData={
-      carp:[],
-      funa:[],
-      setFish:(fishList)=>{
-        ChartData.carp.push(0);
-        ChartData.funa.push(0);
-        fishList.forEach(fish=>{
-          switch(fish.name){
-            case 'koi':
-            ChartData.carp[ChartData.carp.length-1]++;
-            break;
-            case 'funa':
-            ChartData.funa[ChartData.funa.length-1]++;
-            break;
-          }
-        });
+    class Main{
+      stageW:number = 0;
+      stageH:number = 0;
+      canvasContext:CanvasRenderingContext2D|null=null;
+      drawCount=0;
+      canvasController=new CanvasController();
+      ChartData:any={
+        carp:[],
+        funa:[],
+        setFish:(fishList:Array<Fish>)=>{
+          this.ChartData.carp.push(0);
+          this.ChartData.funa.push(0);
+          fishList.forEach((fish)=>{
+            switch(fish.name){
+              case 'koi':
+              this.ChartData.carp[this.ChartData.carp.length-1]++;
+              break;
+              case 'funa':
+              this.ChartData.funa[this.ChartData.funa.length-1]++;
+              break;
+            }
+          });
+        }
       }
-    }
-    // canvas要素の参照を取得
-    const canvas = document.getElementById('js-pond');
-    // 2Dの描画命令群を取得
-    const context = canvas.getContext('2d');
-    let drawCount=0;
-    resize();
-    tick();
-    window.addEventListener('resize', resize);
-    
-    function tick() {
-      requestAnimationFrame(tick);
-      draw();
-    }
-    
-    function draw() {
-      drawCount++;
-      if(drawCount%300==1){
-        ChartData.setFish(pond.fishList);
-        console.log(ChartData.carp);
-        //チャート
-        const ctx = document.getElementById("fishChart");
-        const fishChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            datasets:[
-              {
-                label:"Carp",
-                data:ChartData.carp
-              },
-              {
-                label:"Funa",
-                data:ChartData.funa
-              }
-            ],
-            labels:[...Array(ChartData.carp.length).keys()]
-          }
-      });
+      constructor(){
+        const js_pond=document.getElementById('js-pond');
+        if(js_pond){
+          this.stageW = js_pond.clientWidth * devicePixelRatio;
+          this.stageH = js_pond.clientHeight * devicePixelRatio;
+        }
       }
-      // 画面をリセット
-      context.clearRect(0, 0, stageW, stageH);
-      context.lineWidth = 10;
-      
-      context.strokeStyle = `#fff`;
-      fieldWidth = Math.min(stageW, stageH);
-      widthCoeff=fieldWidth/POND_SIZE;
-      const segmentNum = 30;　// 分割数
-      const amplitude = stageH / 3; // 振幅
-      const time = Date.now() / 1000; // 媒介変数(時間)
-      pond.getFishPos().forEach((fish) => {
-        context.beginPath();
-        context.strokeStyle = fish.color;
-        context.lineWidth = fish.width*canvasController.zoom;
-        fish.position.forEach((xy,i) => {
-          let [x,y]=[Math.floor(xy[0]*widthCoeff+canvasController.x),Math.floor(xy[1]*widthCoeff+canvasController.y)];
-            x=(fieldWidth/2)+((x-(fieldWidth/2))*canvasController.zoom)
-            y=(fieldWidth/2)+((y-(fieldWidth/2))*canvasController.zoom)
-          // 線を描く
-          if (i === 0) {
-            context.moveTo(x, y);
-          } else {
-            context.lineTo(x, y);
-          }
+      tick() {
+        requestAnimationFrame(this.tick);
+        this.draw();
+      }
+      draw() {
+        this.drawCount++;
+        if(this.drawCount%300==1){
+          this.ChartData.setFish(pond.fishList);
+          console.log(this.ChartData.carp);
+          //チャート
+          const ctx = document.getElementById("fishChart");
+          const fishChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              datasets:[
+                {
+                  label:"Carp",
+                  data:this.ChartData.carp
+                },
+                {
+                  label:"Funa",
+                  data:this.ChartData.funa
+                }
+              ],
+              labels:[...Array(this.ChartData.carp.length).keys()]
+            }
         });
-        context.stroke();  
-      });  
+        }
+        if(this.canvasContext==null){
+          return;
+        }
+        // 画面をリセット
+        this.canvasContext.clearRect(0, 0, stageW, stageH);
+        this.canvasContext.lineWidth = 10;
+        
+        this.canvasContext.strokeStyle = `#fff`;
+        fieldWidth = Math.min(stageW, stageH);
+        widthCoeff=fieldWidth/POND_SIZE;
+        const segmentNum = 30;　// 分割数
+        const amplitude = stageH / 3; // 振幅
+        const time = Date.now() / 1000; // 媒介変数(時間)
+        pond.getFishPos().forEach((fish) => {
+          this.canvasContext.beginPath();
+          this.canvasContext.strokeStyle = fish.color;
+          this.canvasContext.lineWidth = fish.width*canvasController.zoom;
+          fish.position.forEach((xy,i) => {
+            let [x,y]=[Math.floor(xy[0]*widthCoeff+canvasController.x),Math.floor(xy[1]*widthCoeff+canvasController.y)];
+              x=(fieldWidth/2)+((x-(fieldWidth/2))*canvasController.zoom)
+              y=(fieldWidth/2)+((y-(fieldWidth/2))*canvasController.zoom)
+            // 線を描く
+            if (i === 0) {
+              this.canvasContext.moveTo(x, y);
+            } else {
+              this.canvasContext.lineTo(x, y);
+            }
+          });
+          this.canvasContext.stroke();  
+        });  
+      }
+      static main(){
+        // canvas要素の参照を取得
+        const canvas = document.getElementById('js-pond');
+        // 2Dの描画命令群を取得
+        this.context = canvas.getContext('2d');
+        this.resize();
+        this.tick();
+        window.addEventListener('resize', resize);
+      }
+      resize() {
+        stageW = document.getElementById('js-pond').clientWidth * devicePixelRatio;
+        stageH = document.getElementById('js-pond').clientHeight * devicePixelRatio;
+  
+        canvas.width = stageW;
+        canvas.height = stageH;
+      }
+   
     }
-    function resize() {
-      stageW = document.getElementById('js-pond').clientWidth * devicePixelRatio;
-      stageH = document.getElementById('js-pond').clientHeight * devicePixelRatio;
-
-      canvas.width = stageW;
-      canvas.height = stageH;
-    }
 
 
-    function canvasClick(e){
+    function canvasClick(e:MouseEvent){
       console.log("click");
     }
-    function canvasMousedown(e){
+    function canvasMousedown(e:MouseEvent){
       canvasController.mousedown(e);
     }
-    function canvasMouseleave(e){
+    function canvasMouseleave(e:MouseEvent){
       canvasController.mouseup(e);
     }
-    function canvasMouseup(e){
+    function canvasMouseup(e:MouseEvent){
       canvasController.mouseup(e);
     }
-    function canvasMousemove(e){
+    function canvasMousemove(e:MouseEvent){
 
       canvasController.mousemove(e);
     }

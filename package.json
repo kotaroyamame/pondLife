@@ -1,0 +1,19 @@
+{
+  "name": "pondlife",
+  "version": "1.0.0",
+  "description": "生態系のモデルです",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kotaroyamame/pondLife.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kotaroyamame/pondLife/issues"
+  },
+  "homepage": "https://github.com/kotaroyamame/pondLife#readme"
+}
