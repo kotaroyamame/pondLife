@@ -67,9 +67,9 @@ export abstract class Fish {
     abstract copy():Fish;
     hansyoku(): Array<any> {
         if (this.count % this.hansyokuTime == this.hansyokuTime - 1) {
-            if (this.hara > this.taiseki * 2) {
-                const childSize = Math.floor((this.hara - this.taiseki) / this.taiseki);
-                this.hara -= childSize * this.taiseki;
+            const childSize = Math.floor((this.hara - this.taiseki) / this.taiseki);
+            if (this.hara > (this.hara+this.taiseki) * childSize) {
+                this.hara -= childSize * (this.hara+this.taiseki);
                 return [...Array(childSize)].map(o => this.copy())
             }
         }
