@@ -1,6 +1,7 @@
 import { Pond } from "./Pond";
 
 export abstract class Fish {
+    is_eatdead=false;
     name: string = "";
     mouseSize = 2;
     caneat = "any";
@@ -67,9 +68,9 @@ export abstract class Fish {
     abstract copy():Fish;
     hansyoku(): Array<any> {
         if (this.count % this.hansyokuTime == this.hansyokuTime - 1) {
-            const childSize = Math.floor((this.hara - this.taiseki) / this.taiseki);
-            if (this.hara > (this.hara+this.taiseki) * childSize) {
-                this.hara -= childSize * (this.hara+this.taiseki);
+            const childSize = Math.floor((this.hara - (this.taiseki*2)) / this.taiseki);
+            if (childSize>0 && this.hara > (this.taiseki*2) * childSize) {
+                this.hara -= childSize * this.taiseki*2;
                 return [...Array(childSize)].map(o => this.copy())
             }
         }

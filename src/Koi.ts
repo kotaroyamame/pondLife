@@ -18,7 +18,7 @@ export class Koi extends Fish {
     this.hansyokuTime = 60 * 20 + Math.floor((Math.random() * 30));
     this.caneat = "funa";
     this.lifeCicle = 60 * 10;
-    this.haraSize = this.taiseki * 7;
+    this.haraSize = this.taiseki * 3;
     this.setPosition();
   }
   copy() {

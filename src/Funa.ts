@@ -14,11 +14,12 @@ export class Funa extends Fish {
         this.staightRunCoeff = 80 + Math.floor(Math.random() * 15);
         this.jumyou = 60 * 60 + Math.floor((Math.random() * 30));
         this.hansyokuTime = 60 * 15 + Math.floor((Math.random() * 30));
-        this.setPosition();
+        
         this.taisha = 1;
         this.caneat = "mizinko";
         this.lifeCicle = 60 * 5;
         this.haraSize = this.taiseki * 7;
+        this.setPosition();
     }
     copy() {
         return new Funa(this.pondSize, this.getTailPosition());

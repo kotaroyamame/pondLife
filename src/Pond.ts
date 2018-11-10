@@ -1,26 +1,35 @@
 import {Mizinko} from 'Mizinko';
 import {Fish} from 'Fish';
+import {combination} from 'js-combinatorics';
 export class Pond {
   mouseShadow: Array<Array<any>>;
   constructor(private pondSize: number, private fishList: Array<Fish>) {
     this.mouseShadow = [...Array(pondSize)].map(o => [...Array(pondSize)].map(p => []));
   }
   resetShadow() {
-    this.mouseShadow.forEach(o => {
-      o.forEach(p => {
-        p = [];
-      })
-    })
+    for(let i=0;i<this.mouseShadow.length;i++){
+      for(let j=0;j<this.mouseShadow[i].length;j++){
+        this.mouseShadow[i][j]=[];
+      }
+    }
   }
   get FishList(){
     return this.fishList;
   }
   getFishPos() {
-    this.fishList = this.fishList.filter(o => o);
+    this.fishList = this.fishList.filter(o => {
+      if(!o){
+        return false;
+      }
+      return !o.is_eatdead;
+    });
     //死んだ魚排除
     let fishSize = this.fishList.length - 1;
     for (let i = fishSize; i >= 0; i--) {
-      if (!this.fishList[i]) { this.fishList.splice(i, 1); continue; }
+      if (!this.fishList[i]) { 
+        this.fishList.splice(i, 1); 
+        continue;
+      }
       if (this.fishList[i].is_dead) {
         for (let j = 0; j < this.fishList[i].hara + this.fishList[i].fun; j++) {
           try {
@@ -67,32 +76,29 @@ export class Pond {
       if (this.mouseShadow[i_position[0]] && this.mouseShadow[i_position[0]][i_position[1]]) {
         this.mouseShadow[i_position[0]][i_position[1]].push(i);
       }
-
-
-      // for(let j=this.fishList.length-1;j>=0;j--){
-      //   if(i==j){
-      //     continue;
-      //   }
-      //   const j_position=this.fishList[j].getNowPosition();
-      //   if(i_position[0]==j_position[0]&&i_position[1]==j_position[1]){
-      //     if(this.fishList[i].strongCoeff>this.fishList[j].strongCoeff){
-      //       if(this.fishList[i].caneat==this.fishList[j].name&&this.fishList[i].hara<this.fishList[i].haraSize){
-      //         this.fishList[i].taberu(this.fishList[j].taiseki);
-      //         this.fishList.splice(j,1); 
-      //       }
-
-      //     }
-      //   }
-      // }
-
     }
     for (let i = 0; i < this.mouseShadow.length; i++) {
       for (let j = 0; j < this.mouseShadow[i].length; j++) {
         if (this.mouseShadow[i][j].length > 1) {
           //口の影が被っている魚同士を比較
           const _shadowList = this.mouseShadow[i][j];
-          for (let k = 0; k < _shadowList.length; k++) {
-            this.fishList[_shadowList[k]]
+          if(_shadowList.length>1) {
+            const cmb=combination(_shadowList,2);
+            let c:any;
+            while(c=cmb.next()){
+              console.log(c);
+              if(this.fishList[c[0]]&&this.fishList[c[1]]){
+                if(this.fishList[c[0]].caneat==this.fishList[c[1]].name){
+                  this.fishList[c[0]].taberu(this.fishList[c[1]].taiseki+this.fishList[c[1]].hara);
+                  this.fishList[c[1]].is_eatdead=true;
+                }else if(this.fishList[c[1]].caneat==this.fishList[c[0]].name){
+                  this.fishList[c[1]].taberu(this.fishList[c[0]].taiseki+this.fishList[c[0]].hara);
+                  this.fishList[c[0]].is_eatdead=true;
+                }
+                
+              }
+            }
+            
           }
         }
       }

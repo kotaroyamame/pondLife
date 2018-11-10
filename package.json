@@ -20,8 +20,10 @@
   "homepage": "https://github.com/kotaroyamame/pondLife#readme",
   "dependencies": {
     "@types/chart.js": "^2.7.40",
+    "@types/js-combinatorics": "^0.5.29",
     "chart.js": "^2.7.3",
     "copy-webpack-plugin": "^4.6.0",
+    "js-combinatorics": "^0.5.4",
     "path": "^0.12.7",
     "webpack-dev-server": "^3.1.10"
   },
