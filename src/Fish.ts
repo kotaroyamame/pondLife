@@ -2,8 +2,8 @@ import { Pond } from "./Pond";
 
 export abstract class Fish {
     is_eatdead=false;
-    name: string = "";
-    mouseSize = 2;
+    name: string = "fish";
+    mouseSize = 1;
     caneat = "any";
     taiseki = 10;
     strongCoeff = 10;
@@ -32,6 +32,8 @@ export abstract class Fish {
         return this.positionStack[this.positionStack.length - 1];
     }
     taberu(n: number) {
+        console.log("taberu");
+        console.log(this.name);
         this.hara += n;
     }
     getWidth() {
@@ -69,7 +71,7 @@ export abstract class Fish {
     hansyoku(): Array<any> {
         if (this.count % this.hansyokuTime == this.hansyokuTime - 1) {
             const childSize = Math.floor((this.hara - (this.taiseki*2)) / this.taiseki);
-            if (childSize>0 && this.hara > (this.taiseki*2) * childSize) {
+            if (childSize>0) {
                 this.hara -= childSize * this.taiseki*2;
                 return [...Array(childSize)].map(o => this.copy())
             }

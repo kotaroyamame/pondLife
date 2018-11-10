@@ -13,6 +13,7 @@ export class Mizinko extends Fish {
     this.hara = 1;
     this.name = "mizinko";
     this.staightRunCoeff = 20 + Math.floor(Math.random() * 5);
+    this.caneat = "none";
     this.setPosition();
   }
   getNextPosition(prev: number) {

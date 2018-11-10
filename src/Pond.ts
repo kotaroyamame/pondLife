@@ -71,11 +71,24 @@ export class Pond {
       const i_position = this.fishList[i].getNowPosition();
       //インデックスを落とす
       if(!i_position){
+        console.log(this.fishList[i]);
         continue;
       }
-      if (this.mouseShadow[i_position[0]] && this.mouseShadow[i_position[0]][i_position[1]]) {
-        this.mouseShadow[i_position[0]][i_position[1]].push(i);
+      for(let j=0;j<this.fishList[i].mouseSize;j++){
+        if (this.mouseShadow[i_position[0]+j] && this.mouseShadow[i_position[0]+j][i_position[1]]) {
+          this.mouseShadow[i_position[0]+j][i_position[1]].push(i);
+        }
+        if (this.mouseShadow[i_position[0]] && this.mouseShadow[i_position[0]][i_position[1]+j]) {
+          this.mouseShadow[i_position[0]][i_position[1]+j].push(i);
+        }
+        if (this.mouseShadow[i_position[0]-j] && this.mouseShadow[i_position[0]-j][i_position[1]]) {
+          this.mouseShadow[i_position[0]-j][i_position[1]].push(i);
+        }
+        if (this.mouseShadow[i_position[0]] && this.mouseShadow[i_position[0]][i_position[1]-j]) {
+          this.mouseShadow[i_position[0]][i_position[1]-j].push(i);
+        }
       }
+
     }
     for (let i = 0; i < this.mouseShadow.length; i++) {
       for (let j = 0; j < this.mouseShadow[i].length; j++) {
@@ -86,16 +99,18 @@ export class Pond {
             const cmb=combination(_shadowList,2);
             let c:any;
             while(c=cmb.next()){
-              console.log(c);
               if(this.fishList[c[0]]&&this.fishList[c[1]]){
-                if(this.fishList[c[0]].caneat==this.fishList[c[1]].name){
+                if(this.fishList[c[0]].caneat==this.fishList[c[1]].name&&this.fishList[c[0]].hara<this.fishList[c[0]].haraSize&&!this.fishList[c[1]].is_eatdead){
+                  console.log(this.fishList[c[1]].name);
                   this.fishList[c[0]].taberu(this.fishList[c[1]].taiseki+this.fishList[c[1]].hara);
                   this.fishList[c[1]].is_eatdead=true;
-                }else if(this.fishList[c[1]].caneat==this.fishList[c[0]].name){
+                }else if(this.fishList[c[1]].caneat==this.fishList[c[0]].name&&this.fishList[c[1]].hara<this.fishList[c[1]].haraSize&&!this.fishList[c[0]].is_eatdead){
                   this.fishList[c[1]].taberu(this.fishList[c[0]].taiseki+this.fishList[c[0]].hara);
                   this.fishList[c[0]].is_eatdead=true;
                 }
                 
+              }else{
+                console.log(this.fishList[c[0]])
               }
             }
             
