@@ -25,17 +25,16 @@
       background: black;
     }
   </style>
-  <script src="main.js"> </script>
 </head>
 <body>
 
   <div class="canvasWrap">
-    <canvas class="pond" id="js-pond" onclick="window.canvasClick(event)" onmousedown="canvasMousedown(event)" onmouseup="canvasMouseup(event)" onmouseleave="canvasMouseleave(event)" onmousemove="canvasMousemove(event)"></canvas>
+    <canvas class="pond" id="js-pond" onclick="canvasClick(event)" onmousedown="canvasMousedown(event)" onmouseup="canvasMouseup(event)" onmouseleave="canvasMouseleave(event)" onmousemove="canvasMousemove(event)"></canvas>
   </div>
   <div class="chartWrap">
     <canvas id="fishChart" width="400" height="400"></canvas>
   </div>
   <p></p>
-  
+  <script src="dist/Main.js"> </script>
 </body>
 </html>
