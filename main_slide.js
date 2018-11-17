@@ -1,6 +1,13 @@
- const POND_SIZE=80;//√池のセル数
+ const POND_SIZE=100;//√池のセル数
+ const KOI_SIZE=2;//鯉の数
+ const FUNA_SIZE=50;//フナの数
+ const MIZINKO_SIZE=20;//ミジンコの数
+ class Eye{
+
+ }
     class Fish{
       constructor(pondSize,firestPos){
+        this.mouseSize=2;
         this.firestPos=firestPos;
         this.caneat="any";
         this.taiseki=10;
@@ -205,13 +212,24 @@
       }
     }
     class Pond{
-      constructor(fishList){
+      constructor(pondSize,fishList){
         this.fishList=fishList;
+        this.pondSize=pondSize;
+        this.mouseShadow=[...Array(pondSize)].map(o=>[...Array(pondSize)].map(p=>[]));
+      }
+      resetShadow(){
+        this.mouseShadow.forEach(o=>{
+          o.forEach(p=>{
+            p=[];
+          })
+        })
       }
       getFishPos(){
         this.fishList=this.fishList.filter(o=>o);
         //死んだ魚排除
-        for(let i=this.fishList.length-1;i>=0;i--){
+        let fishSize=this.fishList.length-1;
+        for(let i=fishSize;i>=0;i--){
+          if(!this.fishList[i]){this.fishList.splice(i,1);continue;}
           if(this.fishList[i].is_dead){
             for(let j=0;j<this.fishList[i].hara+this.fishList[i].fun;j++){
               try{
@@ -222,7 +240,9 @@
               }
             }
             this.fishList.splice(i,1);
+            continue;
           }else{
+            for(let i=fishSize;i>=0;i--){
             //ふんをする
             for(let j=0;j<this.fishList[i].fun;j++){
               try{
@@ -234,7 +254,9 @@
             }
             this.fishList[i].fun=0;
           }
+          }
         }
+        
         
         this.fishList=this.fishList.filter(fish=>!fish.is_dead);
         //繁殖
@@ -249,22 +271,41 @@
         //捕食
         for(let i=this.fishList.length-1;i>=0;i--){
           const i_position=this.fishList[i].getNowPosition();
-          for(let j=this.fishList.length-1;j>=0;j--){
-            if(i==j){
-              continue;
-            }
-            const j_position=this.fishList[j].getNowPosition();
-            if(i_position[0]==j_position[0]&&i_position[1]==j_position[1]){
-              if(this.fishList[i].strongCoeff>this.fishList[j].strongCoeff){
-                if(this.fishList[i].caneat==this.fishList[j].name&&this.fishList[i].hara<this.fishList[i].haraSize){
-                  this.fishList[i].taberu(this.fishList[j].taiseki);
-                  this.fishList.splice(j,1); 
-                }
+          //インデックスを落とす
+          if(this.mouseShadow[i_position[0]]&&this.mouseShadow[i_position[0]][i_position[1]]){
+            this.mouseShadow[i_position[0]][i_position[1]].push(i);
+          }
+
+          
+          // for(let j=this.fishList.length-1;j>=0;j--){
+          //   if(i==j){
+          //     continue;
+          //   }
+          //   const j_position=this.fishList[j].getNowPosition();
+          //   if(i_position[0]==j_position[0]&&i_position[1]==j_position[1]){
+          //     if(this.fishList[i].strongCoeff>this.fishList[j].strongCoeff){
+          //       if(this.fishList[i].caneat==this.fishList[j].name&&this.fishList[i].hara<this.fishList[i].haraSize){
+          //         this.fishList[i].taberu(this.fishList[j].taiseki);
+          //         this.fishList.splice(j,1); 
+          //       }
                 
+          //     }
+          //   }
+          // }
+          
+        }
+        for(let i=0;i<this.mouseShadow.length;i++){
+          for(let j=0;j<this.mouseShadow[i].length;j++){
+            if(this.mouseShadow[i][j].length>1){
+              //口の影が被っている魚同士を比較
+              const _shadowList=this.mouseShadow[i][j];
+              for(let k=0;k<_shadowList.length;k++){
+                this.fishList[_shadowList[k]]
               }
             }
           }
         }
+        this.resetShadow();
         return this.fishList.map((o,i,ar)=>{
           return {
             "position":o.getPosition(),
@@ -276,17 +317,17 @@
     }
     
     const fishList =[];
-    for(let i=0;i<2;i++){
+    for(let i=0;i<KOI_SIZE;i++){
       fishList.push(new Koi(POND_SIZE));
     } 
-    for(let i=0;i<40;i++){
+    for(let i=0;i<FUNA_SIZE;i++){
       fishList.push(new Funa(POND_SIZE));
     }
-    for(let i=0;i<100;i++){
+    for(let i=0;i<MIZINKO_SIZE;i++){
       fishList.push(new Mizinko(POND_SIZE));
     }
 
-    const pond = new Pond(fishList);
+    const pond = new Pond(POND_SIZE,fishList);
 
     let stageW = 0; // 画面の幅
     let stageH = 0; // 画面の高さ
@@ -364,14 +405,11 @@
     tick();
     window.addEventListener('resize', resize);
     
-    /** エンターフレームのタイミングです。 */
     function tick() {
       requestAnimationFrame(tick);
       draw();
     }
     
-
-        /** 描画します。 */
     function draw() {
       drawCount++;
       if(drawCount%300==1){
