@@ -21,7 +21,7 @@
   "dependencies": {
     "@types/chart.js": "^2.7.40",
     "@types/js-combinatorics": "^0.5.29",
-    "chart.js": "^2.7.3",
+    "chart.js": "^2.9.4",
     "copy-webpack-plugin": "^4.6.0",
     "js-combinatorics": "^0.5.4",
     "path": "^0.12.7",
