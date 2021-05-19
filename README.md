@@ -3,4 +3,4 @@
 
 生態系のモデルです
 
-[https://iidesign.website/andytools/pondLife/]
+[https://iid.systems/andytools/pondLife/]
